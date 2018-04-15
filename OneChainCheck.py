@@ -1,13 +1,15 @@
 # coding=utf-8
 
 import configparser
+import json
 import logging
 import os
 import re
 import time
+
 import requests
-import json
-import urllib
+
+import Send_email
 
 # 日志
 # 第一步，创建一个logger
@@ -31,7 +33,6 @@ logger.addHandler(fh)
 
 ch.setFormatter(formatter)
 logger.addHandler(ch)
-
 
 # logger.debug('this is a logger debug message')
 # logger.info('this is a logger info message')
@@ -69,10 +70,8 @@ headers = {
 }
 
 
-
 def loginGetAccessToken(user_agent, device_id, l, version):
     url_login = 'http://hkopenservice1.yuyin365.com:8000/one-chain/login?user_agent=' + user_agent + '&device_id=' + device_id + '&l=' + l + '&token=&version=' + version
-
 
     try:
         requests.packages.urllib3.disable_warnings()
@@ -92,6 +91,7 @@ def loginGetAccessToken(user_agent, device_id, l, version):
     except Exception as e:
         print(e)
         return -1
+
 
 def open_mining(user_agent, device_id, l, token, version):
     url_check = 'http://hkopenservice1.yuyin365.com:8000/one-chain/mining/start?user_agent=' + user_agent + '&device_id=' + device_id + '&l=' + l + '&token=' + token + '&version=' + version
@@ -169,7 +169,7 @@ def mining_check(user_agent, device_id, l, token, version):
             if i == 0:
                 logging.warning('>>>>>>>>>> mining_clicked: ' + str(i))
             else:
-                logging.warning('>>>>>>>>>> mining_clicked: ' + str(i+1))
+                logging.warning('>>>>>>>>>> mining_clicked: ' + str(i + 1))
             return 0
         else:
             return -1
@@ -177,6 +177,7 @@ def mining_check(user_agent, device_id, l, token, version):
     except Exception as e:
         print(e)
         return
+
 
 def check_allTotal(user_agent, device_id, l, token, version):
     url_check = 'http://hkopenservice1.yuyin365.com:8000/one-chain/mining/allTotal?user_agent=' + user_agent + '&device_id=' + device_id + '&l=' + l + '&token=' + token + '&version=' + version
@@ -210,11 +211,11 @@ def check_allTotal(user_agent, device_id, l, token, version):
 
 
 def loop_data_mining():
-
     global data
     global token
     one_total = 0
     oneluck_total = 0
+    content = "\t\n"
 
     file = open('one_chain_data.json', 'r', encoding='utf-8')
     data_dict = json.load(file)
@@ -222,11 +223,11 @@ def loop_data_mining():
     # print(type(data_dict))
 
     for item in data_dict['data']:
-        account_id= item.get('account_id', 'NA')
+        account_id = item.get('account_id', 'NA')
         account_name = item.get('account_name', 'NA')
         signed_message = item.get('signed_message', 'NA')
 
-        data=dict(account_id=account_id,account_name=account_name,signed_message=signed_message)
+        data = dict(account_id=account_id, account_name=account_name, signed_message=signed_message)
 
         logging.warning("========== Checking [" + account_name + "] ==========")
 
@@ -242,11 +243,20 @@ def loop_data_mining():
             (one, oneluck) = check_allTotal(user_agent, device_id, l, token, version)
             one_total = one_total + float(one)
             oneluck_total = oneluck_total + float(oneluck)
-            logging.warning("========== End[" + account_name + "], Total[ONE:" + str(one_total) + ", ONELUCK:" + str(oneluck_total)+"] ==========")
+            content = content + " [" + account_name + "], Total[ONE:" + str(one_total) + ", ONELUCK:" + str(
+                oneluck_total) + "] \t\n"
+            logging.warning("========== End[" + account_name + "], Total[ONE:" + str(one_total) + ", ONELUCK:" + str(
+                oneluck_total) + "] ==========")
             logging.warning('\n')
+            time.sleep(3)
+
+    # sending email
+    datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    sub = "Onechain [" + datetime + "][" + str(one_total) + "][" + str(oneluck_total) + "]"
+    Send_email.send_mail('newseeing@163.com', sub, content)
+
 
 ############ Main #############
 
 
 loop_data_mining()
-
