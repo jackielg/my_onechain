@@ -248,7 +248,7 @@ def loop_data_mining():
             logging.warning("========== End[" + account_name + "], Total[ONE:" + str(one_total) + ", ONELUCK:" + str(
                 oneluck_total) + "] ==========")
             logging.warning('\n')
-            time.sleep(3)
+            time.sleep(2)
 
     # sending email
     datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
