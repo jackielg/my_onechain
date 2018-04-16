@@ -254,7 +254,7 @@ def loop_data_mining():
     datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     sub = "Onechain [" + datetime + "][" + str(one_total) + "][" + str(oneluck_total) + "]"
     Send_email.send_mail('newseeing@163.com', sub, content)
-
+    logging.warning('********** Sending Email Complete!')
 
 ############ Main #############
 
