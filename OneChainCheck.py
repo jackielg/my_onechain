@@ -8,6 +8,7 @@ import re
 import time
 
 import requests
+import schedule
 
 import Send_email
 
@@ -256,7 +257,16 @@ def loop_data_mining():
     Send_email.send_mail('newseeing@163.com', sub, content)
     logging.warning('********** Sending Email Complete!')
 
+
 ############ Main #############
 
+# ssl._create_default_https_context = ssl._create_unverified_context
+# schedule.every(120).minutes.do(loop_data_mining)
+schedule.every(4).hours.do(loop_data_mining)
+# schedule.every().day.at("01:05").do(loop_data_mining)
+# schedule.every().monday.do(loop_data_mining)
+# schedule.every().wednesday.at("13:15").do(loop_data_mining)
 
-loop_data_mining()
+while True:
+    schedule.run_pending()
+    time.sleep(1)
