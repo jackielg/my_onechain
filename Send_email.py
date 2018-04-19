@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import smtplib
+import time
 from email.mime.text import MIMEText
 
 mailto_list = ['']  # 收件人(列表)
@@ -30,14 +31,88 @@ def send_mail(to_list, sub, content):
         return False
 
 
-# datetime =  time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-# sub = "Onechain ["+datetime+"]["+str(16.5)+"]"
-# content = sub
-# for i in range(1):  # 发送1封，上面的列表是几个人，这个就填几
-#     if send_mail(mailto_list, sub, content):  # 邮件主题和邮件内容
-#         # 这是最好写点中文，如果随便写，可能会被网易当做垃圾邮件退信
-#         print
-#         "done!"
-#     else:
-#         print
-#         "failed!"
+def send_HtmlEmail(to_list, content_list):
+
+    head = '<!DOCTYPE HTML>' + \
+           '<html id="pageLoading">' + \
+           '<head>' + \
+           '<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>' + \
+           '<title>OneChain</title>' + \
+           '<style type="text/css">' + \
+           '/* Table Head */' + \
+           '#table-7 thead th {' + \
+           'background-color: rgb(81, 130, 187);' + \
+           'color: #fff;' + \
+           'border-bottom-width: 1;' + \
+           '}' + \
+           '/* Column Style */' + \
+           '#table-7' + \
+           'td {' + \
+           'color: #000;' + \
+           '}' + \
+           '/* Heading and Column Style */' + \
+           '#table-7 tr, #table-7 th {' + \
+           'border-width: 1px;' + \
+           'border-style: solid;' + \
+           'border-color: rgb(0, 0, 0);' + \
+           '}' + \
+           '/* Padding and font style */' + \
+           '#table-7 td, #table-7 th {' + \
+           'padding: 5px 10px;' + \
+           'font-size: 12px;' + \
+           'font-family: Verdana;' + \
+           'font-weight: bold;' + \
+           '}' + \
+           '</style>' + \
+           '</head>' + \
+           '<body>' + \
+           '<p>Hello!</p>' + \
+           '<table border="1px" cellspacing="0px" style="border-collapse:collapse" id="table-7">' + \
+           '<thead>' + \
+           '<th align="center">account_name</th>' + \
+           '<th align="center">ONE</th>' + \
+           '<th align="center">ONELUCK</th>' + \
+           '</thead>' + \
+           '<tbody>'
+
+    end = '</tbody>' + \
+          '</table>' + \
+          '</body>' + \
+          ' </html>'
+
+    body = ''
+    ONE_Total = 0
+    ONTLUCK_Total = 0
+    for item in content_list:
+        account_name = item.get('account_name', 'NA')
+        ONE = item.get('ONE', 'NA')
+        ONE_Total = ONE_Total + ONE
+        ONELUCK = item.get('ONELUCK', 'NA')
+        ONTLUCK_Total = ONTLUCK_Total + ONELUCK
+        body = body + '<tr><td align="center">' + account_name + '</td><td align="right">' + str(round(ONE, 2)) + '</td><td align="right">' + str(
+            round(ONELUCK, 2)) + '</td></tr>'
+    sum = body + '<tr><td align="center">Sum:</td><td align="right">' + str(round(ONE_Total, 2)) + '</td><td align="right">' + str(
+        round(ONTLUCK_Total, 2)) + '</td></tr>'
+    mail_msg = head + sum + end
+
+    datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    subject = "Onechain [" + datetime + "], Total [ONE:" + str(round(ONE_Total, 2)) + ", ONELUCK:" + str(
+        round(ONTLUCK_Total, 2)) + "]"
+
+    msg = MIMEText(mail_msg, 'html', 'utf-8')
+    me = "newseeing@163.com"
+    msg['Subject'] = subject
+    msg['From'] = me
+    msg['To'] = "newseeing@163.com"
+    # msg['To'] = ";".join(to_list)  # 将收件人列表以‘；’分隔
+    try:
+        server = smtplib.SMTP()
+        server.connect(mail_host)  # 连接服务器
+        server.login(mail_user, mail_pass)  # 登录操作
+        server.sendmail(me, to_list, msg.as_string())
+        server.close()
+        return True
+    except Exception as e:
+        print(e)
+        return False
+

@@ -220,6 +220,7 @@ def loop_data_mining():
 
     file = open('one_chain_data.json', 'r', encoding='utf-8')
     data_dict = json.load(file)
+    content_list = []
     # print(data_dict)
     # print(type(data_dict))
 
@@ -235,7 +236,7 @@ def loop_data_mining():
         token = loginGetAccessToken(user_agent, device_id, l, version)
         if token == -1:
             logging.warning('********** Login fail!')
-            exit(-1)
+            continue
         else:
             logging.warning('********** Login success! token:' + token)
 
@@ -249,20 +250,29 @@ def loop_data_mining():
             logging.warning("========== End[" + account_name + "], Total[ONE:" + str(one_total) + ", ONELUCK:" + str(
                 oneluck_total) + "] ==========")
             logging.warning('\n')
+
+            # 构建Json数组，用于发送HTML邮件
+            # Python 字典类型转换为 JSON 对象
+            content_data = {
+                "account_name": account_name,
+                "ONE": one_total,
+                "ONELUCK": oneluck_total
+            }
+            content_list.append(content_data)
             time.sleep(2)
 
     # sending email
-    datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    sub = "Onechain [" + datetime + "][" + str(one_total) + "][" + str(oneluck_total) + "]"
-    Send_email.send_mail('newseeing@163.com', sub, content)
+    Send_email.send_HtmlEmail('newseeing@163.com', content_list)
     logging.warning('********** Sending Email Complete!')
 
 
 ############ Main #############
 
+# loop_data_mining()
+
 # ssl._create_default_https_context = ssl._create_unverified_context
 # schedule.every(120).minutes.do(loop_data_mining)
-schedule.every(4).hours.do(loop_data_mining)
+schedule.every(8).hours.do(loop_data_mining)
 # schedule.every().day.at("01:05").do(loop_data_mining)
 # schedule.every().monday.do(loop_data_mining)
 # schedule.every().wednesday.at("13:15").do(loop_data_mining)
