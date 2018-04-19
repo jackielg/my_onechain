@@ -5,9 +5,10 @@ import json
 import logging
 import os
 import re
+import time
+
 import requests
 import schedule
-import time
 
 import Send_email
 
@@ -267,7 +268,7 @@ def loop_data_mining():
 
 ############ Main #############
 
-# loop_data_mining()
+loop_data_mining()
 
 # ssl._create_default_https_context = ssl._create_unverified_context
 # schedule.every(120).minutes.do(loop_data_mining)
