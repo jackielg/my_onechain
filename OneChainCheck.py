@@ -129,9 +129,10 @@ def get_calculated(user_agent, device_id, l, token, version):
 
             calculated = r.json()['data']['map']['calculated']
             logging.warning('>>>>>>>>>> calculated: ' + calculated)
+            return calculated
     except Exception as e:
         print(e)
-        return
+        return -1
 
 
 def mining_click(user_agent, device_id, l, token, version, mining_detail_uuid):
@@ -240,7 +241,7 @@ def loop_data_mining():
         else:
             logging.warning('********** Login success! token:' + token)
 
-            get_calculated(user_agent, device_id, l, token, version)
+            calculated = get_calculated(user_agent, device_id, l, token, version)
             mining_check(user_agent, device_id, l, token, version)
             (one, oneluck) = check_allTotal(user_agent, device_id, l, token, version)
             one_total = one_total + float(one)
@@ -255,6 +256,7 @@ def loop_data_mining():
             # Python 字典类型转换为 JSON 对象
             content_data = {
                 "account_name": account_name,
+                "calculated": calculated,
                 "ONE": one,
                 "ONELUCK": oneluck
             }

@@ -70,7 +70,8 @@ def send_HtmlEmail(to_list, content_list):
            '<table border="1px" cellspacing="0px" style="border-collapse:collapse" id="table-7">' + \
            '<thead>' + \
            '<th align="center">No.</th>' + \
-           '<th align="center">account_name</th>' + \
+           '<th align="center">Account_Name</th>' + \
+           '<th align="center">Cal</th>' + \
            '<th align="center">ONE</th>' + \
            '<th align="center">ONELUCK</th>' + \
            '</thead>' + \
@@ -88,15 +89,19 @@ def send_HtmlEmail(to_list, content_list):
     for item in content_list:
         i = i + 1
         account_name = item.get('account_name', 'NA')
+        calculated = item.get('calculated', 'NA')
         ONE = item.get('ONE', 'NA')
         ONE_Total = ONE_Total + ONE
         ONELUCK = item.get('ONELUCK', 'NA')
         ONTLUCK_Total = ONTLUCK_Total + ONELUCK
-        body = body + '<tr><td align="center">' + str(i) + '</td><td align="center">' + account_name + \
-               '</td><td align="right">' + str(round(ONE, 2)) + '</td><td align="right">' + \
-               str(round(ONELUCK, 2)) + '</td></tr>'
+        body = body + '<tr><td align="center">' + str(i) + \
+               '</td><td align="center">' + account_name + \
+               '</td><td align="center">' + str(calculated) + \
+               '</td><td align="right">' + str(round(ONE, 2)) + \
+               '</td><td align="right">' + str(round(ONELUCK, 2)) + \
+               '</td></tr>'
 
-    sum = body + '<tr><td colspan="2" align="center">Sum:</td><td align="right">' + \
+    sum = body + '<tr><td colspan="2" align="center">Sum:</td><td></td><td align="right">' + \
           str(round(ONE_Total, 2)) + '</td><td align="right">' + \
           str(round(ONTLUCK_Total, 2)) + '</td></tr>'
     mail_msg = head + sum + end
