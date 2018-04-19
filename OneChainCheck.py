@@ -255,8 +255,8 @@ def loop_data_mining():
             # Python 字典类型转换为 JSON 对象
             content_data = {
                 "account_name": account_name,
-                "ONE": one_total,
-                "ONELUCK": oneluck_total
+                "ONE": one,
+                "ONELUCK": oneluck
             }
             content_list.append(content_data)
             time.sleep(2)
