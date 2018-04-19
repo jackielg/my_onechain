@@ -96,7 +96,7 @@ def send_HtmlEmail(to_list, content_list):
                '</td><td align="right">' + str(round(ONE, 2)) + '</td><td align="right">' + \
                str(round(ONELUCK, 2)) + '</td></tr>'
 
-    sum = body + '<tr><td align="center">Sum:</td><td align="right">' + \
+    sum = body + '<tr><td colspan="2" align="center">Sum:</td><td align="right">' + \
           str(round(ONE_Total, 2)) + '</td><td align="right">' + \
           str(round(ONTLUCK_Total, 2)) + '</td></tr>'
     mail_msg = head + sum + end
