@@ -266,7 +266,7 @@ def loop_data_mining():
     logging.warning('********** Sending Email Complete!')
 
 
-# Star from here...
+# Start from here...
 loop_data_mining()
 
 # ssl._create_default_https_context = ssl._create_unverified_context
