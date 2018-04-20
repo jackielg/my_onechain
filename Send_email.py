@@ -33,6 +33,7 @@ def send_mail(to_list, sub, content):
 
 def send_HtmlEmail(to_list, content_list):
 
+    datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     head = '<!DOCTYPE HTML>' + \
            '<html id="pageLoading">' + \
            '<head>' + \
@@ -66,7 +67,7 @@ def send_HtmlEmail(to_list, content_list):
            '</style>' + \
            '</head>' + \
            '<body>' + \
-           '<p>Hello!</p>' + \
+           '<p> ******** '+ datetime +' ******** </p>' + \
            '<table border="1px" cellspacing="0px" style="border-collapse:collapse" id="table-7">' + \
            '<thead>' + \
            '<th align="center">No.</th>' + \
@@ -106,8 +107,8 @@ def send_HtmlEmail(to_list, content_list):
           str(round(ONTLUCK_Total, 2)) + '</td></tr>'
     mail_msg = head + sum + end
 
-    datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    subject = "Onechain [" + datetime + "], Total [ONE:" + str(round(ONE_Total, 2)) + ", ONELUCK:" + str(
+
+    subject = "Onechain, [ONE:" + str(round(ONE_Total, 2)) + ", ONELUCK:" + str(
         round(ONTLUCK_Total, 2)) + "]"
 
     msg = MIMEText(mail_msg, 'html', 'utf-8')
