@@ -41,32 +41,38 @@ logger.addHandler(ch)
 # logger.error('this is a logger error message')
 # logger.critical('this is a logger critical message')
 
-# start
-logging.warning('***** Start ...')
-curpath = os.getcwd()
 
 # get config information
+curpath = os.getcwd()
 content = open(curpath + '/config.ini').read()
 content = re.sub(r"\xfe\xff", "", content)
 content = re.sub(r"\xff\xfe", "", content)
 content = re.sub(r"\xef\xbb\xbf", "", content)
-open(curpath + '\config.ini', 'w').write(content)
+open(curpath + '/config.ini', 'w').write(content)
 
-cf = configparser.ConfigParser()
-cf.read(curpath + '\config.ini')
-user_agent = cf.get('info01', 'user_agent').strip()
-device_id = cf.get('info01', 'device_id').strip()
-l = cf.get('info01', 'l').strip()
-# token = cf.get('info', 'token').strip()
-version = cf.get('info01', 'version').strip()
+
+# start
+logging.warning('***** Start ...')
 
 headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
     'Connection': 'keep-alive',
     'Accept': '*/*',
     'Accept-Language': 'zh-Hans-CN;q=1',
-    'Accept-Encoding': 'gzip, deflate'
+    'Accept-Encoding': 'gzip',
+    'Cache-Control': "no-cache"
 }
+
+
+def getInfoNum(infoNum):
+    global version, l, user_agent, device_id
+    cf = configparser.ConfigParser()
+    cf.read(curpath + '/config.ini')
+    version = cf.get('info', 'version').strip()
+    l = cf.get('info', 'l').strip()
+    user_agent = cf.get('info'+str(infoNum), 'user_agent').strip()
+    device_id = cf.get('info'+str(infoNum), 'device_id').strip()
+    return version, l, user_agent, device_id
 
 
 def loginGetAccessToken(user_agent, device_id, l, version):
@@ -209,6 +215,61 @@ def check_allTotal(user_agent, device_id, l, token, version):
         print(e)
         return -1, -1
 
+def postman_login():
+    url = "http://hkopenservice1.yuyin365.com:8000/one-chain/login"
+
+    querystring = {"user_agent":"android","l":"zh-CN","device_id":"008796747873160","token":"","version":"128"}
+
+    payload = "account_id=1.2.470628&account_name=xudaisi&signed_message=G6gWd1Uv%2BjknXrJBxO%2FqvjMmBntXu5MZZOBM2JFIINHdUp%2BQvZn%2FN0y8P9mlLs8gOwuzn0aIkDPRqQzGXLnTKWg%3D"
+
+
+    response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
+
+    print(response.text)
+
+def postman_getCalculated():
+    url = "http://hkopenservice1.yuyin365.com:8000/one-chain/mining/user/infoString"
+
+    querystring = {"user_agent":"android","l":"zh-CN","device_id":"008796747873160","token":"0404abe7478949d0abdbd71858066446","version":"128"}
+
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+
+    print(response.text)
+
+def postman_getList():
+
+    url = "http://hkopenservice1.yuyin365.com:8000/one-chain/mining/detail/list"
+
+    querystring = {"user_agent":"android","l":"zh-CN","device_id":"008796747873160","token":"0404abe7478949d0abdbd71858066446","version":"128"}
+
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+
+    print(response.text)
+
+def postman_miningClick():
+
+    url = "http://hkopenservice1.yuyin365.com:8000/one-chain/mining/detail/click"
+
+    querystring = {"user_agent":"android","l":"zh-CN","device_id":"008796747873160","token":"0404abe7478949d0abdbd71858066446","version":"128"}
+
+    payload = "account_id=1.2.470628&account_name=xudaisi&signed_message=G6gWd1Uv%2BjknXrJBxO%2FqvjMmBntXu5MZZOBM2JFIINHdUp%2BQvZn%2FN0y8P9mlLs8gOwuzn0aIkDPRqQzGXLnTKWg%3D&mining_detail_uuid%3Dcab375674834408e846305af3d58936d="
+
+    response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
+
+    print(response.text)
+
+def postman_allTotal():
+
+    url = "http://hkopenservice1.yuyin365.com:8000/one-chain/mining/allTotalString"
+
+    querystring = {"user_agent":"android","l":"zh-CN","device_id":"008796747873160","token":"0404abe7478949d0abdbd71858066446","version":"128"}
+
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+
+    print(response.text)
 
 def loop_data_mining():
     global data
@@ -223,11 +284,16 @@ def loop_data_mining():
     # print(data_dict)
     # print(type(data_dict))
 
+    # determine info number
+    i = 0
     for item in data_dict['data']:
+        i = i + 1
+        infoNum = i % 10
+        (version, l, user_agent, device_id) = getInfoNum(infoNum)
+
         account_id = item.get('account_id', 'NA')
         account_name = item.get('account_name', 'NA')
         signed_message = item.get('signed_message', 'NA')
-
         data = dict(account_id=account_id, account_name=account_name, signed_message=signed_message)
 
         logging.warning("========== Checking [" + account_name + "] ==========")
@@ -271,7 +337,7 @@ loop_data_mining()
 
 # ssl._create_default_https_context = ssl._create_unverified_context
 # schedule.every(120).minutes.do(loop_data_mining)
-schedule.every(6).hours.do(loop_data_mining)
+schedule.every(8).hours.do(loop_data_mining)
 # schedule.every().day.at("01:05").do(loop_data_mining)
 # schedule.every().monday.do(loop_data_mining)
 # schedule.every().wednesday.at("13:15").do(loop_data_mining)
