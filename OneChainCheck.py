@@ -54,20 +54,18 @@ open(curpath + '\config.ini', 'w').write(content)
 
 cf = configparser.ConfigParser()
 cf.read(curpath + '\config.ini')
-user_agent = cf.get('info', 'user_agent').strip()
-device_id = cf.get('info', 'device_id').strip()
-l = cf.get('info', 'l').strip()
+user_agent = cf.get('info01', 'user_agent').strip()
+device_id = cf.get('info01', 'device_id').strip()
+l = cf.get('info01', 'l').strip()
 # token = cf.get('info', 'token').strip()
-version = cf.get('info', 'version').strip()
+version = cf.get('info01', 'version').strip()
 
 headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
     'Connection': 'keep-alive',
     'Accept': '*/*',
-    'User-Agent': 'OneChainIOS/1.2.4 (iPhone; iOS 11.3; Scale/3.00)',
     'Accept-Language': 'zh-Hans-CN;q=1',
-    'Accept-Encoding': 'gzip, deflate',
-    'Content-Length': '151'
+    'Accept-Encoding': 'gzip, deflate'
 }
 
 
