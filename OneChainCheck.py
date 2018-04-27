@@ -284,11 +284,20 @@ def loop_data_mining():
     # print(data_dict)
     # print(type(data_dict))
 
+
+    # value = 1
+    # hashCode=(int)(value ^ (value >> 32))
+    # index=hashCode%20
+    # print(index)
+    # result is "0 ~ 19"
+
+
     # determine info number
     i = 0
     for item in data_dict['data']:
         i = i + 1
-        infoNum = i % 10
+        hashCode = (int)(i ^ (i >> 32))
+        infoNum = hashCode % 20
         (version, l, user_agent, device_id) = getInfoNum(infoNum)
 
         account_id = item.get('account_id', 'NA')
